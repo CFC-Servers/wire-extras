@@ -5,6 +5,20 @@ include('shared.lua')
 
 ENT.WireDebugName = "Door Controller"
 
+local function switch(t)
+  t.case = function (self,x)
+    local f=self[x] or self.default
+    if f then
+      if type(f)=="function" then
+        f(x,self)
+      else
+        error("case "..tostring(x).." not a function")
+      end
+    end
+  end
+  return t
+end
+
 function ENT:Initialize()
 	self.isopen = 0
 	self.xautoclose = 0
@@ -203,18 +217,7 @@ function ENT:makedoor(ply,trace,ang,model,open,close,autoclose,closetime,class,h
 
 	self.xent = entit
 	self.xclass = tostring(class)
+
+	return entit
 end
 
-function switch(t)
-  t.case = function (self,x)
-    local f=self[x] or self.default
-    if f then
-      if type(f)=="function" then
-        f(x,self)
-      else
-        error("case "..tostring(x).." not a function")
-      end
-    end
-  end
-  return t
-end

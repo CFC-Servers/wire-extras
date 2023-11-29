@@ -50,23 +50,31 @@ if !ConVarExists("sbox_maxdoors") then CreateConVar("sbox_maxdoors", defaultlimi
 		local newpos = Vector(trace.HitPos.X,trace.HitPos.Y,trace.HitPos.Z - (trace.HitNormal.z * minn.z) )
 		entit:SetPos( newpos )
 		entit:SetAngles(Angle(0,ang.Yaw,0))
-		entit:Spawn()	
-		entit:Activate() 
+		entit:Spawn()
+		entit:Activate()
 		entit:SetPlayer( ply )
 		ply:AddCount( "doors", entit )
-		ply:AddCleanup( "doors", entit )
-		
+		cleanup.Add( ply, "doors", entit )
+
 		local index = ply:UniqueID()
 		Doors[ index ] 			= Doors[ index ] or {}
 		Doors[ index ][1] 	= Doors[ index ][1] or {}
 		table.insert( Doors[ index ][1], entit )
-		
-		
+
+		local door = entit.Entity:makedoor(ply,trace,ang,model,open,close,autoclose,closetime,class,hardware)
+
 		undo.Create("Door")
 		undo.AddEntity( entit )
+
+		if IsValid( door ) then
+			undo.AddEntity( door )
+			cleanup.Add( ply, "doors", door )
+		end
+
 		undo.SetPlayer( ply )
 		undo.Finish()
-		entit.Entity:makedoor(ply,trace,ang,model,open,close,autoclose,closetime,class,hardware)
+
+		-- TODO: Some kind of DeleteOnRemove loop or chain that will remove both?
 	end
 end
 
