@@ -50,11 +50,11 @@ if !ConVarExists("sbox_maxdoors") then CreateConVar("sbox_maxdoors", defaultlimi
 		local newpos = Vector(trace.HitPos.X,trace.HitPos.Y,trace.HitPos.Z - (trace.HitNormal.z * minn.z) )
 		entit:SetPos( newpos )
 		entit:SetAngles(Angle(0,ang.Yaw,0))
-		entit:Spawn()	
-		entit:Activate() 
+		entit:Spawn()
+		entit:Activate()
 		entit:SetPlayer( ply )
 		ply:AddCount( "doors", entit )
-		ply:AddCleanup( "doors", entit )
+		cleanup.Add( ply, "doors", entit )
 
 		local index = ply:UniqueID()
 		Doors[ index ] 			= Doors[ index ] or {}
@@ -68,7 +68,7 @@ if !ConVarExists("sbox_maxdoors") then CreateConVar("sbox_maxdoors", defaultlimi
 
 		if IsValid( door ) then
 			undo.AddEntity( door )
-			ply:AddCleanup( "doors", door )
+			cleanup.Add( ply, "doors", door )
 		end
 
 		undo.SetPlayer( ply )
