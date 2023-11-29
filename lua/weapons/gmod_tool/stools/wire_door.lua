@@ -55,18 +55,26 @@ if !ConVarExists("sbox_maxdoors") then CreateConVar("sbox_maxdoors", defaultlimi
 		entit:SetPlayer( ply )
 		ply:AddCount( "doors", entit )
 		ply:AddCleanup( "doors", entit )
-		
+
 		local index = ply:UniqueID()
 		Doors[ index ] 			= Doors[ index ] or {}
 		Doors[ index ][1] 	= Doors[ index ][1] or {}
 		table.insert( Doors[ index ][1], entit )
-		
-		
+
+		local door = entit.Entity:makedoor(ply,trace,ang,model,open,close,autoclose,closetime,class,hardware)
+
 		undo.Create("Door")
 		undo.AddEntity( entit )
+
+		if IsValid( door ) then
+			undo.AddEntity( door )
+			ply:AddCleanup( "doors", door )
+		end
+
 		undo.SetPlayer( ply )
 		undo.Finish()
-		entit.Entity:makedoor(ply,trace,ang,model,open,close,autoclose,closetime,class,hardware)
+
+		-- TODO: Some kind of DeleteOnRemove loop or chain that will remove both?
 	end
 end
 
